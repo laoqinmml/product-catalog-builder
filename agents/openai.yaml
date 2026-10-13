@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Catalog Builder"
+  short_description: "Build, render and QA a print-ready product catalogue"
+  default_prompt: "Use $product-catalog-builder to take my product catalogue from inputs and copy through HTML pages, 300 DPI assets, page renders and a print-ready PDF, then run the QA checklist."
