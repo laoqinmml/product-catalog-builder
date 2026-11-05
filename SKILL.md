@@ -92,6 +92,7 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 7. **`.ps1` 里只用 ASCII。** Windows PowerShell 5.1 读无 BOM 的 `.ps1` 会按 ANSI 解，中文字面量会变成乱码路径。需要中文目录名时用 `[char]` 拼，例如 `[char]0x8F93 + [char]0x51FA` = 「输出」。
 8. **打印分页靠 CSS。** `@page { size: 210mm 297mm; margin: 0; }` 加 `.sheet { break-after: page; }`，最后一页 `break-after: auto`，否则会多出一张空白页。
 9. **页面唯一编号来源是文件名。** 文件名前两位是页码，页脚 `<span class="pn">N</span>` 必须跟它一致，`check_pages.py` 会核对。
+10. **同一套图上网要转 WebP。** 图册素材是 300 DPI 位图，直接放进网页，一张产品卡就是几百 KB。网页只发 `.webp`（quality 82，透明底保留 alpha），单张产品图控制在 120 KB 以内，首页图片合计 1 MB 以内；`og:image` 留 JPG，`apple-touch-icon` 留 PNG。做法和实测数据见 [`references/web-delivery.md`](references/web-delivery.md)。
 
 ## 规格与品牌
 
