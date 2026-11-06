@@ -111,6 +111,7 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 - 后台用密码登录，session 走 HttpOnly cookie，`noindex` + robots 屏蔽，列表能筛选、分页、导出 CSV。
 - **两个必须记住的坑**：Pages 的 `PATCH deployment_configs` 是整体替换，改任意一个变量都要把全部 secret 一起重发；`plain_text` 变量进不了 Functions，一律用 `secret_text`。
 - 域名没有 MX 就收不到 `sales@` 的信，Resend 只管发。发信域名验证和收信（Email Routing / 企业邮）是两件事。
+- **要投广告就先做归因**：读 `utm_*` 与 `gclid` / `fbclid`，存 `sessionStorage` 跨页携带，写进 `leads` 表并在后台显示；WhatsApp / 邮件的预填文案由一条脚本按当前页生成，不要在每个页面的模板里重复拼 URL。
 
 完整链路、表和验收命令见 [`references/form-backend-and-admin.md`](references/form-backend-and-admin.md)。
 

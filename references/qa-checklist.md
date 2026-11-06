@@ -78,6 +78,14 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 - [ ] CSV 导出行数 = 线索数 + 1，表头字段齐全。
 - [ ] 测试线索已从 D1 删除，真实数据里没有 `@example.com`。
 
+## 广告归因与联系方式
+
+- [ ] 带 `?utm_source=…&fbclid=…` 打开落地页，再走到别的页面提交，D1 里 `utm_source / utm_medium / utm_campaign / click_id` 都有值。
+- [ ] 后台 Source 列能看到页面路径和 `facebook / cpc / 系列名`，CSV 里五列都在。
+- [ ] WhatsApp 预填文案带当前页地址；换了页面（含不在导航里的页面）地址跟着变。
+- [ ] 静态 HTML 里的 `wa.me` 链接是干净地址，没把 `?text=` 写死进去。
+- [ ] `tel:` 链接无空格，`wa.me` 与 `tel:` 用同一串号码，页面上没有残留旧号码。
+
 ## 常见坑
 
 - **只看脚本绿了就交付。** 脚本查一致性，查不出排版难看。肉眼看一遍是硬要求。

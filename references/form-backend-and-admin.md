@@ -50,7 +50,12 @@ CREATE TABLE IF NOT EXISTS leads (
   user_agent TEXT,
   ip_hash TEXT,
   mail_status TEXT DEFAULT 'pending',
-  status TEXT DEFAULT 'new'
+  status TEXT DEFAULT 'new',
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  click_id TEXT,
+  referrer TEXT
 );
 ```
 
@@ -122,7 +127,7 @@ PATCH /accounts/{account}/pages/projects/{project}
 - **密码比较**用定长比较（逐字符 XOR 累加），别用 `===` 直接比
 - **登录限流**：同 IP 每小时 8 次，写 `login_attempts` 表
 - **页面** `noindex, nofollow`，robots.txt 加 `Disallow: /admin`
-- 列表带：编号、时间、联系人（姓名 + 可点邮箱）、公司、数量、国家、发信状态、需求（`<details>` 展开）、筛选框、分页、CSV 导出、退出
+- 列表带：编号、时间、联系人（姓名 + 可点邮箱）、公司、数量、国家（单独一列）、来源页（有广告来源时下面多一行 `facebook / cpc / wind_2026q4`）、发信状态、需求（`<details>` 展开）、筛选框、分页、CSV 导出、退出
 
 **渲染必须包完整 HTML 外壳。** 只输出 `<table>` 会得到一张没有任何样式的裸页面（我们第一次就踩了）。
 
@@ -141,7 +146,69 @@ npx wrangler d1 execute <库名> --remote --command "SELECT id, mail_status FROM
 
 `mail_status` 必须是 `sent`，出现 `skipped` 说明 Resend 的 key 或收件人没读到；出现 `error:4xx` 看 Resend 的报错体。
 
-## 九、清理
+## 九、广告归因（投 Google / FB 之前先做）
+
+投广告以后，"这个询盘从哪来"比"有没有询盘"更重要。落地页的参数要能一路带进数据库。
+
+```sql
+ALTER TABLE leads ADD COLUMN utm_source TEXT;
+ALTER TABLE leads ADD COLUMN utm_medium TEXT;
+ALTER TABLE leads ADD COLUMN utm_campaign TEXT;
+ALTER TABLE leads ADD COLUMN click_id TEXT;   -- gclid 或 fbclid
+ALTER TABLE leads ADD COLUMN referrer TEXT;
+```
+
+前端要做三件事：
+
+1. 从 `location.search` 读 `utm_source / utm_medium / utm_campaign`，以及 `gclid` / `fbclid`（后者存进 `click_id`）
+2. 存一份到 `sessionStorage`：访客从广告页跳到别的页再提交，来源也不会丢
+3. 提交时随 JSON 一起 POST，并带上 `document.referrer`
+
+后台与导出：列表的 Source 列显示页面路径，有来源时下面多一行 `facebook / cpc / wind_2026q4`；CSV 里五列都在；通知邮件加一行 Campaign。
+
+UTM 命名别随手起，否则统计没法看：
+
+| 平台 | utm_source | utm_medium | utm_campaign |
+| --- | --- | --- | --- |
+| Google Search | `google` | `cpc` | 系列名 |
+| Google PMax | `google` | `pmax` | 系列名 |
+| Facebook | `facebook` | `paid_social` | 系列名 |
+
+两个注意：`document.referrer` 不能当唯一来源，HTTPS 站之间经常被裁成空；参数只作为附注，不要拼进正文，否则文案会被一长串参数搞乱。
+
+## 十、WhatsApp 与邮件的来源标记
+
+客户在 WhatsApp 里发来的第一句话，最好自带"我在哪一页看到你"。
+
+**别在构建时把 URL 写进每个页面的链接。** 静态站常见做法是把页面路径塞进 `wa.me?text=`，能用，但每加一页都要保证模板传了路径，容易漏。更稳的是：HTML 只放基础地址，URL 由一条脚本在浏览器里拼。
+
+```html
+<body data-wa-template="Hello, I would like to know more about this page: {url}"
+      data-mail-subject="Website enquiry: {url}">
+...
+<a href="https://wa.me/8613xxxxxxxxx" data-wa>WhatsApp</a>
+<a href="mailto:sales@example.com" data-mail>sales@example.com</a>
+```
+
+```js
+const pageUrl = location.origin + location.pathname; // 丢掉 utm 参数
+document.querySelectorAll("a[data-wa]").forEach((a) => {
+  const base = a.href.split("?")[0];
+  const text = template.replace("{url}", pageUrl) + (campaign ? ` (via ${campaign})` : "");
+  a.href = `${base}?text=${encodeURIComponent(text)}`;
+});
+```
+
+- 加页面不用改任何模板，只要这页有页脚
+- 文案改一处（`<body>` 上的模板）全站生效
+- 结构化数据里仍然是干净地址，不带 `?text=`
+- 代价：没有 JS 时链接能点开但没预填文案；介意的话在 `href` 里放一句通用文案兜底
+
+邮件同理，`mailto:?subject=` 里带页面地址和来源，销售一眼看出客户在问哪个型号。
+
+`tel:` 与 `wa.me` 用同一串数字；页面上显示可以带空格（`+86 137 3823 3256`），`href` 里必须是 `tel:+8613738233256` 这种无空格形式。
+
+## 十一、清理
 
 测试用的线索记得删掉，别让真实数据里混着 `@example.com`：
 
