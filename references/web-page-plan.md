@@ -95,6 +95,20 @@ sales@example.com ↗    WhatsApp +86 137 3823 3256 ↗
 
 排查时直接 `curl` 页面搜 `cdn-cgi/l/email-protection`：出现就说明被混淆了，别去改代码。
 
+### 结论：默认关掉
+
+这个功能保护的是"不让爬虫从 HTML 里抓到邮箱"，但实际收益接近于零，代价却很实在：
+
+- **地址在别处已经是明文**：每页的 `Organization` JSON-LD 里有 `email`，`llms.txt` 里有，隐私政策正文里也有。混淆只盖住 `mailto:` 这一处，等于锁了门忘了窗。
+- **现代爬虫都跑 JS**，无头浏览器一执行，混淆自动还原。
+- **成本是每个访客都看得到的**：悬停状态栏是一串 `/cdn-cgi/l/email-protection#...`，无 JS 时正文显示 `[email protected]`，任何按 `mailto:` 做统计或预填的脚本全部失效。
+
+防垃圾邮件靠这三层就够：表单蜜罐 + 按 IP 限流 + 邮箱服务商的垃圾过滤，都比混淆有效。
+
+如果确实想保留这层保护，配套动作是**把 JSON-LD 里的 `email` 字段删掉**（不是必填项），否则混淆形同虚设。
+
+注意：改这个设置需要 Cloudflare token 有 **Zone Settings: Edit** 权限，只给 DNS + Pages 的 token 会返回 `Authentication error`，只能由账号本人在面板操作。
+
 ## 八、每页都要有的标记
 - `<link rel="canonical">`（指向自己的正式地址）
 - OG / Twitter 卡片（分享出去要有图有标题）
