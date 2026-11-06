@@ -66,6 +66,18 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 - [ ] Search Console 显示「已成功验证」，站点地图状态为「成功」。
 - [ ] `site:域名` 24–48 小时后能搜到自己。
 
+## 表单与后台
+
+- [ ] 表单不是纯 `mailto:`：提交后 `POST /api/rfq` 返回 200，且 D1 里能查到这一条。
+- [ ] `mail_status` 是 `sent`；出现 `skipped` 说明 Resend key 或收件人没读到，`error:4xx` 去看 Resend 报错。
+- [ ] 域名有 MX，`sales@` 真能收信（Resend 只负责发，不负责收）。
+- [ ] 蜜罐字段填了内容会返回 200 但不落库；同 IP 一小时内超限返回 429。
+- [ ] 接口故意打挂时，前端会退回 `mailto:` 并提示，线索不丢。
+- [ ] `/admin/leads` 未登录只出密码页，错密码有提示，对密码能出列表。
+- [ ] 后台页面带完整 HTML 外壳（不是裸 `<table>`），`noindex` 生效，robots 有 `Disallow: /admin`。
+- [ ] CSV 导出行数 = 线索数 + 1，表头字段齐全。
+- [ ] 测试线索已从 D1 删除，真实数据里没有 `@example.com`。
+
 ## 常见坑
 
 - **只看脚本绿了就交付。** 脚本查一致性，查不出排版难看。肉眼看一遍是硬要求。

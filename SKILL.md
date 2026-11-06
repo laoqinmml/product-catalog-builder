@@ -103,6 +103,17 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 
 步骤、验收参数（`gcs=G100/101`）和常见坑见 [`references/analytics-and-search-console.md`](references/analytics-and-search-console.md)。
 
+## 表单要真的能收到
+
+静态站的表单默认只是 `mailto:`，等于让访客自己发邮件。要落库、要通知、要能查，就接 Cloudflare Pages Function + D1 + Resend，并配一个 `/admin/leads` 后台：
+
+- 接口 `POST /api/rfq`，校验 + 蜜罐 + 按 IP 限流，写 D1 后再发信；接口挂了前端退回 `mailto:` 兜底。
+- 后台用密码登录，session 走 HttpOnly cookie，`noindex` + robots 屏蔽，列表能筛选、分页、导出 CSV。
+- **两个必须记住的坑**：Pages 的 `PATCH deployment_configs` 是整体替换，改任意一个变量都要把全部 secret 一起重发；`plain_text` 变量进不了 Functions，一律用 `secret_text`。
+- 域名没有 MX 就收不到 `sales@` 的信，Resend 只管发。发信域名验证和收信（Email Routing / 企业邮）是两件事。
+
+完整链路、表和验收命令见 [`references/form-backend-and-admin.md`](references/form-backend-and-admin.md)。
+
 ## 规格与品牌
 
 - 成品 210 × 297 mm A4 竖版；含出血 216 × 303 mm；安全边 10 mm；装订方式胶装。
