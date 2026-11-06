@@ -110,6 +110,9 @@ sales@example.com ↗    WhatsApp +86 137 3823 3256 ↗
 注意：改这个设置需要 Cloudflare token 有 **Zone Settings: Edit** 权限，只给 DNS + Pages 的 token 会返回 `Authentication error`，只能由账号本人在面板操作。
 
 ## 八、每页都要有的标记
+- **产品详情页的 `<h1>` 就是产品名**，不要写成广告语。`Hollow hydraulic torque wrenches` 比 `The workhorse for flange work.` 有用得多：客户是搜着产品词进来的，标题对不上，跳出率就上去了；广告语想留就放进下面的引言，别占 h1
+- 系列名放在 h1 上方的 eyebrow（`XLCT SERIES`），不要塞进标题里重复
+- `<title>` 用「产品名 | 品牌」，`<meta description>` 用一句有参数的话（尺寸范围、吨位、压力）
 - `<link rel="canonical">`（指向自己的正式地址）
 - OG / Twitter 卡片（分享出去要有图有标题）
 - 唯一的 `<h1>`
