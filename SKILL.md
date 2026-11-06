@@ -94,6 +94,15 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 9. **页面唯一编号来源是文件名。** 文件名前两位是页码，页脚 `<span class="pn">N</span>` 必须跟它一致，`check_pages.py` 会核对。
 10. **同一套图上网要转 WebP。** 图册素材是 300 DPI 位图，直接放进网页，一张产品卡就是几百 KB。网页只发 `.webp`（quality 82，透明底保留 alpha），单张产品图控制在 120 KB 以内，首页图片合计 1 MB 以内；`og:image` 留 JPG，`apple-touch-icon` 留 PNG。做法和实测数据见 [`references/web-delivery.md`](references/web-delivery.md)。
 
+## 上线后（统计与收录）
+
+图册站交付前还有两件事，都不需要改服务器：
+
+- **GA4**：一个 `G-XXXXXXXXXX` 代表一个数据流，ID 写进内容配置、构建时注入 `<head>`，不要手改每页。必须配 Consent Mode v2：`analytics_storage` 默认 denied，同意条点了才 granted，广告三项永远 denied。
+- **Search Console**：独立站用「域名资源」，走 DNS TXT；DNS 在 Cloudflare 时 GSC 提供一键授权（点「授权」后 Google 自己加那条 TXT），验证通过再提交 sitemap。Bing / Yandex 用 IndexNow，不需要账号。
+
+步骤、验收参数（`gcs=G100/101`）和常见坑见 [`references/analytics-and-search-console.md`](references/analytics-and-search-console.md)。
+
 ## 规格与品牌
 
 - 成品 210 × 297 mm A4 竖版；含出血 216 × 303 mm；安全边 10 mm；装订方式胶装。
