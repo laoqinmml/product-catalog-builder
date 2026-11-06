@@ -104,6 +104,24 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 
 完整清单（含是否进导航 / 是否进 sitemap / 是否索引）、转化页的六条规矩和链接关系自查见 [`references/web-page-plan.md`](references/web-page-plan.md)。
 
+## Cloudflare 令牌：先问清权限，再动手
+
+要 Agent 操作 Cloudflare（DNS、Pages 部署、D1、站点设置），**开口就要一份明确的权限清单，别指望一个令牌什么都能干**。最小可用集：
+
+| 用途 | 权限 |
+| --- | --- |
+| 读域名 | Zone → Zone → **Read** |
+| 改 DNS（CNAME / MX / TXT / DKIM / DMARC） | Zone → DNS → **Edit** |
+| 改站点设置（邮件混淆、SSL、缓存、Always Use HTTPS） | Zone → Zone Settings → **Edit** |
+| 部署静态站 | Account → Cloudflare Pages → **Edit** |
+| 建库与读写 | Account → D1 → **Edit** |
+
+范围务必选**具体域名 + 具体账户**，不要 All zones。
+
+两个经验：**「DNS 能改、站点能部署」不等于「设置能改」**，这是两套权限；但**改权限不用换令牌**——在面板里 Edit 勾上新权限保存，同一个令牌字符串继续有效。
+
+拿到令牌先跑一遍探测脚本，把缺的权限一次列清再问用户要，不要边做边卡。完整对照表、探测代码和替代方案见 [`references/cloudflare-permissions.md`](references/cloudflare-permissions.md)。
+
 ## 上线后（统计与收录）
 
 图册站交付前还有两件事，都不需要改服务器：
