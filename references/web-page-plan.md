@@ -91,7 +91,11 @@ sales@example.com ↗    WhatsApp +86 137 3823 3256 ↗
 
 后果：鼠标悬停状态栏是一串乱码、关掉 JS 的访客看到 `[email protected]`、任何按 `mailto:` 做统计或装饰的脚本都失效。
 
-处理：Cloudflare 面板 → 选中域名 → **Speed → Optimization → Email Address Obfuscation → 关**（老界面在 **Scrape Shield** 下）。关掉后 HTML 里就是干净的 `mailto:`。
+处理：Cloudflare 面板 → 选中域名 → **安全性 / Security → 设置 / Settings → 「客户端滥用 / Client-side abuse」分组 → 电子邮件地址混淆 / Email Address Obfuscation → 关**。
+
+直达链接：`https://dash.cloudflare.com/?to=/:account/:zone/security/settings`
+
+（这一项被挪过好几次：老界面在 **Scrape Shield**，中间有一段时间在 **Speed → Optimization**。找不到就认准「安全性 → 设置」这个位置，或直接在设置页搜索框里搜 `client-side abuse`。）
 
 排查时直接 `curl` 页面搜 `cdn-cgi/l/email-protection`：出现就说明被混淆了，别去改代码。
 
@@ -108,6 +112,19 @@ sales@example.com ↗    WhatsApp +86 137 3823 3256 ↗
 如果确实想保留这层保护，配套动作是**把 JSON-LD 里的 `email` 字段删掉**（不是必填项），否则混淆形同虚设。
 
 注意：改这个设置需要 Cloudflare token 有 **Zone Settings: Edit** 权限，只给 DNS + Pages 的 token 会返回 `Authentication error`，只能由账号本人在面板操作。
+
+### 不想动全局开关时：用 `email_off` 只豁免自己的地址
+
+Cloudflare 官方留了一个标记，被包住的内容永远不会被混淆，即使全局开着：
+
+```html
+<!--email_off--><a href="mailto:sales@example.com">sales@example.com</a><!--/email_off-->
+```
+
+- 只影响这一处，其他保护照常
+- 生成 HTML 的模板里加个包装函数即可：`const emailOff = (html) => \`<!--email_off-->${html}<!--/email_off-->\``
+- 邮箱出现在正文里（隐私政策、表单说明、页脚纯文本）也要包，否则只有链接干净、文字仍是 `[email protected]`
+- 验证方式不变：`curl` 首页搜 `cdn-cgi/l/email-protection`，应该 0 条
 
 ## 八、每页都要有的标记
 - **产品详情页的 `<h1>` 就是产品名**，不要写成广告语。`Hollow hydraulic torque wrenches` 比 `The workhorse for flange work.` 有用得多：客户是搜着产品词进来的，标题对不上，跳出率就上去了；广告语想留就放进下面的引言，别占 h1
