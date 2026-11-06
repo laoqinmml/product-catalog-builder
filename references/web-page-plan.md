@@ -72,18 +72,37 @@ sales@example.com ↗    WhatsApp +86 137 3823 3256 ↗
 
 ## 六、每页都要有的东西
 
-- **页脚联系方式做成图标列表**：邮箱、WhatsApp（或电话）、Facebook 各一行，每行 `14px 内联 SVG + 文字`，全部左对齐、行距一致。邮箱用描边信封，WhatsApp 用品牌填充图标，Facebook 用 f 字形
-- **同一个渠道只出现一次**：电话和 WhatsApp 是同一个号码时，别并列两行一样的数字 —— 留 WhatsApp 那行（图标已经说明渠道），把 `tel:` 行去掉；需要点按拨号时，把号码本身写成 `tel:` 链接
+- **页脚联系方式做成图标列表**：邮箱、WhatsApp、电话（同号时说明区别）、Facebook 各一行，每行 `14px 内联 SVG + 文字`，全部左对齐、行距一致。邮箱用描边信封，WhatsApp 用品牌填充图标
+- **Facebook 这类强识别平台用 40px 圆角徽章**，单独一行放在列表末尾，别用 14px 小图标跟文字混排；徽章上方不要再加分隔线，列表本身已经够清楚
 - 不要在下面再单独放一行 "WhatsApp ↗ Facebook ↗" 文字链接，跟上面的图标列表重复
+- **邮箱链接保持 `mailto:a@b.com`，不要加 `?subject=`**：地址后面挂一长串参数，鼠标悬停时状态栏显示一大段编码，访客会以为链接有问题
 - 图标用 `currentColor`，跟随文字颜色变化，不要写死品牌色（深底站点里满色 logo 会抢视觉）
-- `<title>` 和 `<meta name="description">`（不重复、不堆关键词）
+
+## 七、Cloudflare 会偷偷改你的邮箱链接
+
+如果站托管在 Cloudflare（Pages、Workers 都算），代理开关打开时，**「邮件地址混淆（Email Address Obfuscation）」会默认把页面里所有 `mailto:` 和邮箱文本替换掉**：
+
+```html
+<!-- 你写的 -->
+<a href="mailto:sales@example.com">sales@example.com</a>
+<!-- 实际发给浏览器的 -->
+<a href="/cdn-cgi/l/email-protection#4734262b2234...">[email protected]</a>
+```
+
+后果：鼠标悬停状态栏是一串乱码、关掉 JS 的访客看到 `[email protected]`、任何按 `mailto:` 做统计或装饰的脚本都失效。
+
+处理：Cloudflare 面板 → 选中域名 → **Speed → Optimization → Email Address Obfuscation → 关**（老界面在 **Scrape Shield** 下）。关掉后 HTML 里就是干净的 `mailto:`。
+
+排查时直接 `curl` 页面搜 `cdn-cgi/l/email-protection`：出现就说明被混淆了，别去改代码。
+
+## 八、每页都要有的标记
 - `<link rel="canonical">`（指向自己的正式地址）
 - OG / Twitter 卡片（分享出去要有图有标题）
 - 唯一的 `<h1>`
 - 面包屑（产品详情页）+ `BreadcrumbList` 结构化数据
 - 首页放 `Organization`，产品页放 `Product`，FAQ 页放 `FAQPage`
 
-## 七、链接关系自查
+## 九、链接关系自查
 
 | 检查 | 期望 |
 | --- | --- |
