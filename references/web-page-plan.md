@@ -45,7 +45,19 @@ if (typeof window.gtag === "function") {
 - 同时把参数挂到 `window.vorlixConversion`，以后要接 Google Ads / Meta 的转化代码，直接读这个对象，不用改页面。
 - 同意模式下，`analytics_storage` 被拒绝时事件照发但不落 cookie，这是预期行为。
 
-## 四、政策页必须写真的
+## 四、转化页要放联系方式
+
+客户刚提交完，是最想再补一句"顺便问一下"的时候。转化页标题下方直接放一行联系方式，样式跟页脚社媒一致（文字 + ↗ 箭头）：
+
+```
+sales@example.com ↗    WhatsApp +86 137 3823 3256 ↗
+```
+
+- 邮箱走 `mailto:`，WhatsApp 走 `wa.me`，都用跟全站一致的预填文案（当前页地址自动带上，客户一开口你就知道他从哪来）
+- 不要放"联系我们"这种跳到别的页的按钮，直接给可点的地址
+- 社媒链接（Facebook / LinkedIn / Instagram）留着字段，有了就填，没有就不渲染 —— 空链接比没有更糟
+
+## 五、政策页必须写真的
 
 隐私政策里关于表单的那一段，**要跟实际实现一致**：
 
@@ -55,7 +67,7 @@ if (typeof window.gtag === "function") {
 
 改完表单忘了改隐私政策，是这类站最常见的合规漏洞，也是客户投诉的起点。
 
-## 五、每页都要有的东西
+## 六、每页都要有的东西
 
 - `<title>` 和 `<meta name="description">`（不重复、不堆关键词）
 - `<link rel="canonical">`（指向自己的正式地址）
@@ -64,7 +76,7 @@ if (typeof window.gtag === "function") {
 - 面包屑（产品详情页）+ `BreadcrumbList` 结构化数据
 - 首页放 `Organization`，产品页放 `Product`，FAQ 页放 `FAQPage`
 
-## 六、链接关系自查
+## 七、链接关系自查
 
 | 检查 | 期望 |
 | --- | --- |

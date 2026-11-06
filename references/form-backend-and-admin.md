@@ -106,13 +106,37 @@ PATCH /accounts/{account}/pages/projects/{project}
 
 域名侧的完整配置、双邮件模板、以及"DNS 全对但邮件还是退"的排查，见 [`mail-delivery.md`](mail-delivery.md)。
 
-## 六、防垃圾（足够用，不用上验证码）
+## 六、表单字段：四个就够
+
+能回信的最小集合是 **姓名 + 工作邮箱 + 公司 + 留言**。再多一个字段，转化率就往下掉一点。
+
+- **不要加"数量 / Units needed"这种分级下拉。** 客户自己都不知道要几台，填了也是瞎猜，还多一次点击。真需要，在留言里问。
+- **留言框的标签写成 `Message`，提示放在括号里**：`Message * (bolt size, grade, target torque, number of joints)`。把要求塞进标签本身，比在下面加一行说明更省空间，也不容易被忽略。
+- **星号只标真正影响回信的字段**（邮箱），其余字段用星号表示"强烈建议填"，但**不要用校验拦住提交**。客户不想写留言也应该能提交 —— 拒掉一次，这条线索就没了。
+- 服务端同样放宽：留言为空照样落库、照样发通知和回执，回执里自然少一行。
+
+```html
+<label for="email">Work email <span class="req">*</span></label>
+<label for="message">Message <span class="req">*</span> <em class="hint">(bolt size, grade, target torque, number of joints)</em></label>
+```
+
+```js
+// 只有姓名和邮箱参与校验，留言是可选的引导
+const rules = {
+  name: (v) => (v.trim().length < 2 ? "Add the name we should reply to." : ""),
+  email: (v) => (!emailRe.test(v.trim()) ? "That email address is missing something." : ""),
+};
+```
+
+另外：**页脚和联系页别写"公司详情见报价单"这类含糊话**。有话就写，没有就整块删掉，留一个空标题比不写更糟。
+
+## 七、防垃圾（足够用，不用上验证码）
 
 - **蜜罐**：表单里放一个屏幕外、`tabindex="-1"`、`aria-hidden` 的输入框；提交时该字段有值就返回 200 但静默丢弃
 - **限流**：按 `ip_hash`（IP + salt 的 SHA-256 前 8 字节）统计一小时内的提交数，超过阈值返回 429
 - 都不需要第三方服务，也不会给访客增加一步交互
 
-## 七、/admin/leads
+## 八、/admin/leads
 
 一个受密码保护的服务端渲染页面，同一个 worker 出：
 
@@ -134,7 +158,7 @@ PATCH /accounts/{account}/pages/projects/{project}
 
 **渲染必须包完整 HTML 外壳。** 只输出 `<table>` 会得到一张没有任何样式的裸页面（我们第一次就踩了）。
 
-## 八、验收
+## 九、验收
 
 ```powershell
 # 1 接口语义
@@ -149,7 +173,7 @@ npx wrangler d1 execute <库名> --remote --command "SELECT id, mail_status FROM
 
 `mail_status` 必须是 `sent`，出现 `skipped` 说明 Resend 的 key 或收件人没读到；出现 `error:4xx` 看 Resend 的报错体。
 
-## 九、广告归因（投 Google / FB 之前先做）
+## 十、广告归因（投 Google / FB 之前先做）
 
 投广告以后，"这个询盘从哪来"比"有没有询盘"更重要。落地页的参数要能一路带进数据库。
 
@@ -179,7 +203,7 @@ UTM 命名别随手起，否则统计没法看：
 
 两个注意：`document.referrer` 不能当唯一来源，HTTPS 站之间经常被裁成空；参数只作为附注，不要拼进正文，否则文案会被一长串参数搞乱。
 
-## 十、WhatsApp 与邮件的来源标记
+## 十一、WhatsApp 与邮件的来源标记
 
 客户在 WhatsApp 里发来的第一句话，最好自带"我在哪一页看到你"。
 
@@ -211,7 +235,7 @@ document.querySelectorAll("a[data-wa]").forEach((a) => {
 
 `tel:` 与 `wa.me` 用同一串数字；页面上显示可以带空格（`+86 137 3823 3256`），`href` 里必须是 `tel:+8613738233256` 这种无空格形式。
 
-## 十一、提交成功后跳转转化页
+## 十二、提交成功后跳转转化页
 
 接口返回 2xx 后不要停在原地显示"已收到"，**跳转到 `/thank-you/?ref=<id>`**：
 
@@ -230,7 +254,7 @@ if (response.ok) {
 
 转化页本身的规则（不进导航、noindex、独立可访问、事件写法）见 [`web-page-plan.md`](web-page-plan.md)。
 
-## 十二、清理
+## 十三、清理
 
 测试用的线索记得删掉，别让真实数据里混着 `@example.com`：
 
