@@ -72,7 +72,9 @@ sales@example.com ↗    WhatsApp +86 137 3823 3256 ↗
 
 ## 六、每页都要有的东西
 
-- **页脚联系方式带图标**：电话和 WhatsApp 前面各放一个 14px 内联 SVG（描边图标 + 品牌填充图标），社媒平台用「文字 + ↗」；Facebook 这类有强识别 logo 的平台，可以在链接行上方单独放一个 40px 圆角徽章，视觉上比小图标更像"关注我们"
+- **页脚联系方式做成图标列表**：邮箱、WhatsApp（或电话）、Facebook 各一行，每行 `14px 内联 SVG + 文字`，全部左对齐、行距一致。邮箱用描边信封，WhatsApp 用品牌填充图标，Facebook 用 f 字形
+- **同一个渠道只出现一次**：电话和 WhatsApp 是同一个号码时，别并列两行一样的数字 —— 留 WhatsApp 那行（图标已经说明渠道），把 `tel:` 行去掉；需要点按拨号时，把号码本身写成 `tel:` 链接
+- 不要在下面再单独放一行 "WhatsApp ↗ Facebook ↗" 文字链接，跟上面的图标列表重复
 - 图标用 `currentColor`，跟随文字颜色变化，不要写死品牌色（深底站点里满色 logo 会抢视觉）
 - `<title>` 和 `<meta name="description">`（不重复、不堆关键词）
 - `<link rel="canonical">`（指向自己的正式地址）
