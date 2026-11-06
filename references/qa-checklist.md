@@ -103,7 +103,7 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 - [ ] 转化事件只在这个页面触发，刷新不会重复计数（GA4 里 `generate_lead` 数量 = 提交数）
 - [ ] `grep -r 'href="/thank-you/"' dist --include=*.html` 只在转化页自身命中 canonical / og:url
 - [ ] 隐私政策里关于表单的段落和实际实现一致（是否落库、是否发信、保留多久）
-- [ ] 转化页标题下方有可直接点的邮箱和 WhatsApp（带 ↗ 样式），不用再跳一页去找联系方式
+- [ ] 转化页在描述下方有一句「想更快联系就用这两个」，并给出可点的邮箱和 WhatsApp（带 ↗ 样式）
 
 ## 表单字段
 
