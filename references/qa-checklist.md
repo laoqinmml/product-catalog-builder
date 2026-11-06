@@ -95,6 +95,15 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 - [ ] 通知邮件 `reply_to` = 访客邮箱；回执 `reply_to` = 销售邮箱
 - [ ] 用真实邮箱走一遍：两封都收到，点「回复」指向正确的人
 
+## 转化页（thank-you）
+
+- [ ] 表单提交成功后地址变成 `/thank-you/?ref=<id>`，页面上显示的编号和后台一致
+- [ ] 转化页有 `noindex`，不在 sitemap 里，导航和页脚没有任何入口链接
+- [ ] 直接打开 `/thank-you/`（不带参数）也正常显示，不是空白或报错
+- [ ] 转化事件只在这个页面触发，刷新不会重复计数（GA4 里 `generate_lead` 数量 = 提交数）
+- [ ] `grep -r 'href="/thank-you/"' dist --include=*.html` 只在转化页自身命中 canonical / og:url
+- [ ] 隐私政策里关于表单的段落和实际实现一致（是否落库、是否发信、保留多久）
+
 ## 常见坑
 
 - **只看脚本绿了就交付。** 脚本查一致性，查不出排版难看。肉眼看一遍是硬要求。

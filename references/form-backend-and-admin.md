@@ -11,8 +11,8 @@
         → 蜜罐 + 限流 + 字段校验
         → 写入 D1（leads 表）
         → Resend 发通知到销售邮箱（reply_to 设成访客邮箱，直接回复即可）
-        → 返回 { ok: true }
-        → 页面原地显示"已收到"，表单清空
+        → 返回 { ok: true, id }
+        → 跳转 /thank-you/?ref=<id>（转化页，事件在那里触发）
         → 接口挂了自动退回 mailto，线索不丢
 ```
 
@@ -211,7 +211,26 @@ document.querySelectorAll("a[data-wa]").forEach((a) => {
 
 `tel:` 与 `wa.me` 用同一串数字；页面上显示可以带空格（`+86 137 3823 3256`），`href` 里必须是 `tel:+8613738233256` 这种无空格形式。
 
-## 十一、清理
+## 十一、提交成功后跳转转化页
+
+接口返回 2xx 后不要停在原地显示"已收到"，**跳转到 `/thank-you/?ref=<id>`**：
+
+```js
+if (response.ok) {
+  const { id } = await response.json();
+  window.location.assign(`/thank-you/${id ? `?ref=${id}` : ""}`);
+}
+```
+
+为什么要跳转而不是原地提示：
+
+- 广告平台（Google Ads / Meta）认的是**落地 URL**，只有地址变了才能配成转化目标
+- GA4 的 `generate_lead` 事件在转化页触发，天然排除"提交失败"和重复提交
+- 页面刷新不会重复提交表单（POST 已经结束，现在停在 GET）
+
+转化页本身的规则（不进导航、noindex、独立可访问、事件写法）见 [`web-page-plan.md`](web-page-plan.md)。
+
+## 十二、清理
 
 测试用的线索记得删掉，别让真实数据里混着 `@example.com`：
 

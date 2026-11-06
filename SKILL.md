@@ -94,6 +94,16 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 9. **页面唯一编号来源是文件名。** 文件名前两位是页码，页脚 `<span class="pn">N</span>` 必须跟它一致，`check_pages.py` 会核对。
 10. **同一套图上网要转 WebP。** 图册素材是 300 DPI 位图，直接放进网页，一张产品卡就是几百 KB。网页只发 `.webp`（quality 82，透明底保留 alpha），单张产品图控制在 120 KB 以内，首页图片合计 1 MB 以内；`og:image` 留 JPG，`apple-touch-icon` 留 PNG。做法和实测数据见 [`references/web-delivery.md`](references/web-delivery.md)。
 
+## 网站页面规划
+
+画首页之前先把页面清单钉死，别等站做完再补。除常规的产品页、应用页、公司页之外，**必须预留三类容易被漏掉的页面**：
+
+- **转化页 `/thank-you/`**：表单提交成功后跳转到这里，转化事件只在它身上触发。它不进导航、不进页脚、不进 sitemap，加 `noindex`，但必须能独立打开（广告平台会直接访问这个 URL）。
+- **政策页 `/privacy/` `/terms/`**：页脚可达；隐私政策里关于表单的段落必须跟实际实现一致（有没有服务端存储、有没有统计、怎么撤回）。
+- **`/404.html`**：任何失效链接都要落到一个能带人回产品页的页面。
+
+完整清单（含是否进导航 / 是否进 sitemap / 是否索引）、转化页的六条规矩和链接关系自查见 [`references/web-page-plan.md`](references/web-page-plan.md)。
+
 ## 上线后（统计与收录）
 
 图册站交付前还有两件事，都不需要改服务器：
