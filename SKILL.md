@@ -112,8 +112,9 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 - **两个必须记住的坑**：Pages 的 `PATCH deployment_configs` 是整体替换，改任意一个变量都要把全部 secret 一起重发；`plain_text` 变量进不了 Functions，一律用 `secret_text`。
 - 域名没有 MX 就收不到 `sales@` 的信，Resend 只管发。发信域名验证和收信（Email Routing / 企业邮）是两件事。
 - **要投广告就先做归因**：读 `utm_*` 与 `gclid` / `fbclid`，存 `sessionStorage` 跨页携带，写进 `leads` 表并在后台显示；WhatsApp / 邮件的预填文案由一条脚本按当前页生成，不要在每个页面的模板里重复拼 URL。
+- **一次提交发两封**：通知给销售（`reply_to` = 访客，点回复直接回客户）+ 回执给访客（`reply_to` = 销售），状态分开记。域名侧要有 MX / SPF / DKIM / DMARC 四件套，DMARC 从 `p=none` 起步。
 
-完整链路、表和验收命令见 [`references/form-backend-and-admin.md`](references/form-backend-and-admin.md)。
+完整链路、表和验收命令见 [`references/form-backend-and-admin.md`](references/form-backend-and-admin.md)；域名邮件配置、双邮件模板和退信排查见 [`references/mail-delivery.md`](references/mail-delivery.md)。
 
 ## 规格与品牌
 

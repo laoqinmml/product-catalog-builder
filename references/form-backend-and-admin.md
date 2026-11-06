@@ -98,10 +98,13 @@ PATCH /accounts/{account}/pages/projects/{project}
 ## 五、发信（Resend）
 
 - 域名要先用 DNS 验证：TXT `resend._domainkey`（DKIM）、MX `send`、TXT `send`（SPF）、CNAME `rsend`，四条都在子域上，不动根域 MX
-- 发信时把 `reply_to` 设成访客邮箱，销售点"回复"就直接回给客户
-- 返回非 2xx 时不要吞掉，把状态写回 `leads.mail_status`（`sent` / `error:422` / `skipped`），出问题一眼能看出来
+- **每次提交发两封**：一封通知给销售（`reply_to` 设成访客邮箱，点回复直接回客户），一封回执给访客（`reply_to` 设成销售邮箱，客户点回复回到你收件箱）
+- 两封的状态分开记（`mail_status` / `receipt_status`），一封失败不影响另一封
+- 返回非 2xx 时不要吞掉，把状态写回数据库（`sent` / `error:422` / `skipped`），出问题一眼能看出来
 
-**最容易被忽略的一步：收信。** 域名没有 MX 就没有人收得到 `sales@`，邮件会退。Resend 只管发，不管收。要么用 Cloudflare Email Routing 转发到已有邮箱，要么上 Google Workspace / Zoho。
+**最容易被忽略的一步：收信。** 域名没有 MX 就没有人收得到 `sales@`，邮件会退。Resend 只管发，不管收。要么用飞书 / Google Workspace / Zoho 托管邮箱，要么用 Cloudflare Email Routing 转发（两者只能选一个，MX 会打架）。
+
+域名侧的完整配置、双邮件模板、以及"DNS 全对但邮件还是退"的排查，见 [`mail-delivery.md`](mail-delivery.md)。
 
 ## 六、防垃圾（足够用，不用上验证码）
 

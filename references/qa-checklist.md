@@ -86,6 +86,15 @@ python "$skill\scripts\inspect_pdf_images.py" "$root\输出\<名称>.pdf"
 - [ ] 静态 HTML 里的 `wa.me` 链接是干净地址，没把 `?text=` 写死进去。
 - [ ] `tel:` 链接无空格，`wa.me` 与 `tel:` 用同一串号码，页面上没有残留旧号码。
 
+## 邮件送达
+
+- [ ] 根域有 MX，且真的收到测试信（`bounced` 时看 `diagnosticCode`，`550 User not found` = 邮箱没建）
+- [ ] 根域 SPF 只有一条、`-all` 结尾；发信服务商的 DKIM 解析出来是完整公钥
+- [ ] `_dmarc` 存在，`p=none` 起步，`rua` 指向真实存在的邮箱
+- [ ] 提交一次后，库里 `mail_status` 和 `receipt_status` 都是 `sent`
+- [ ] 通知邮件 `reply_to` = 访客邮箱；回执 `reply_to` = 销售邮箱
+- [ ] 用真实邮箱走一遍：两封都收到，点「回复」指向正确的人
+
 ## 常见坑
 
 - **只看脚本绿了就交付。** 脚本查一致性，查不出排版难看。肉眼看一遍是硬要求。
